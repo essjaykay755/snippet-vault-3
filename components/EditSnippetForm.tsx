@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 
 interface EditSnippetFormProps {
   snippet?: Snippet;
-  onSave: (snippet: Snippet) => void;
+  onSave: (snippet: Omit<Snippet, "id" | "userId">) => void;
   onCancel: () => void;
 }
 
@@ -24,7 +24,6 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      id: snippet?.id || Date.now(),
       title,
       language,
       content,
@@ -147,7 +146,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
             id="tags"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
-            className="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
+            className="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm  text-gray-900 dark:text-gray-100"
             placeholder="Add a tag"
           />
           <button

@@ -1,56 +1,73 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SnippetCard, { Snippet } from "./SnippetCard";
 import AddSnippetPlaceholder from "./AddSnippetPlaceholder";
 import Modal from "./Modal";
 import EditSnippetForm from "./EditSnippetForm";
-
-const initialSnippets = [
-  {
-    id: 1,
-    title: "React useEffect",
-    language: "javascript",
-    content: "useEffect(() => {\n  // Effect code here\n}, [dependencies])",
-    date: "2023-05-15",
-  },
-  {
-    id: 2,
-    title: "Python List Comprehension",
-    language: "python",
-    content: "new_list = [expression for item in iterable if condition]",
-    date: "2023-05-16",
-  },
-  {
-    id: 3,
-    title: "CSS Flexbox",
-    language: "css",
-    content:
-      ".container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}",
-    date: "2023-05-17",
-  },
-];
+import { useAuth } from "../contexts/AuthContext";
+import SignIn from "./SignIn";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 const SnippetGrid: React.FC = () => {
-  const [snippets, setSnippets] = useState<Snippet[]>(initialSnippets);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { user, loading } = useAuth();
 
-  const handleAddSnippet = (newSnippet: Snippet) => {
-    setSnippets([...snippets, newSnippet]);
-    setIsAddModalOpen(false);
+  useEffect(() => {
+    if (user) {
+      const q = query(
+        collection(db, "snippets"),
+        where("userId", "==", user.uid)
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const snippetsData = querySnapshot.docs.map((doc) => {
+          const data = doc.data() as Omit<Snippet, "id">;
+          return { id: doc.id, ...data } as Snippet;
+        });
+        setSnippets(snippetsData);
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const handleAddSnippet = async (
+    newSnippet: Omit<Snippet, "id" | "userId">
+  ) => {
+    if (user) {
+      await addDoc(collection(db, "snippets"), {
+        ...newSnippet,
+        userId: user.uid,
+      });
+      setIsAddModalOpen(false);
+    }
   };
 
-  const handleUpdateSnippet = (updatedSnippet: Snippet) => {
-    setSnippets(
-      snippets.map((snippet) =>
-        snippet.id === updatedSnippet.id ? updatedSnippet : snippet
-      )
-    );
+  const handleUpdateSnippet = async (updatedSnippet: Snippet) => {
+    if (user) {
+      const { id, ...snippetData } = updatedSnippet;
+      await updateDoc(doc(db, "snippets", id), snippetData);
+    }
   };
 
-  const handleDeleteSnippet = (id: number) => {
-    setSnippets(snippets.filter((snippet) => snippet.id !== id));
+  const handleDeleteSnippet = async (id: string) => {
+    if (user) {
+      await deleteDoc(doc(db, "snippets", id));
+    }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <SignIn />;
 
   return (
     <>

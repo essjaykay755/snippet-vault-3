@@ -6,17 +6,19 @@ import { Edit, Trash2, Copy, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface Snippet {
-  id: number;
+  id: string;
   title: string;
   language: string;
   content: string;
   date: string;
+  tags: string[];
+  userId: string;
 }
 
 interface SnippetCardProps {
   snippet: Snippet;
   onUpdate: (updatedSnippet: Snippet) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 const languageColors: { [key: string]: string } = {
@@ -41,8 +43,8 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
     setIsEditing(true);
   };
 
-  const handleSave = (updatedSnippet: Snippet) => {
-    onUpdate(updatedSnippet);
+  const handleSave = (updatedSnippet: Omit<Snippet, "id" | "userId">) => {
+    onUpdate({ ...snippet, ...updatedSnippet });
     setIsEditing(false);
     setIsModalOpen(false);
   };
@@ -83,9 +85,9 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
                 }}
               >
                 {tokens.map((line, i) => (
-                  <div key={i} {...getLineProps({ line })}>
+                  <div key={i} {...getLineProps({ line, key: i })}>
                     {line.map((token, key) => (
-                      <span key={key} {...getTokenProps({ token })} />
+                      <span key={key} {...getTokenProps({ token, key })} />
                     ))}
                   </div>
                 ))}
@@ -148,9 +150,9 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
                     }}
                   >
                     {tokens.map((line, i) => (
-                      <div key={i} {...getLineProps({ line })}>
+                      <div key={i} {...getLineProps({ line, key: i })}>
                         {line.map((token, key) => (
-                          <span key={key} {...getTokenProps({ token })} />
+                          <span key={key} {...getTokenProps({ token, key })} />
                         ))}
                       </div>
                     ))}
