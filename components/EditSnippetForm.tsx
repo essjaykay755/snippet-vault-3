@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Snippet } from "./SnippetCard";
 import { motion } from "framer-motion";
+import { Highlight, themes } from "prism-react-renderer";
+import { X } from "lucide-react";
 
 interface EditSnippetFormProps {
   snippet?: Snippet;
@@ -16,6 +18,8 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
   const [title, setTitle] = useState(snippet?.title || "");
   const [language, setLanguage] = useState(snippet?.language || "");
   const [content, setContent] = useState(snippet?.content || "");
+  const [tags, setTags] = useState<string[]>(snippet?.tags || []);
+  const [newTag, setNewTag] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +28,20 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
       title,
       language,
       content,
+      tags,
       date: snippet?.date || new Date().toISOString().split("T")[0],
     });
+  };
+
+  const addTag = () => {
+    if (newTag && !tags.includes(newTag)) {
+      setTags([...tags, newTag]);
+      setNewTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   return (
@@ -39,7 +55,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Title
         </label>
@@ -48,14 +64,14 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
           required
         />
       </div>
       <div>
         <label
           htmlFor="language"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Language
         </label>
@@ -63,7 +79,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
           id="language"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
           required
         >
           <option value="">Select a language</option>
@@ -77,24 +93,94 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
       <div>
         <label
           htmlFor="content"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
         >
           Content
         </label>
-        <textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={10}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-          required
-        ></textarea>
+        <div className="mt-1 rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+          <Highlight
+            theme={themes.nightOwl}
+            code={content}
+            language={language as any}
+          >
+            {({ className, style, tokens, getLineProps, getTokenProps }) => (
+              <pre
+                className={className}
+                style={{
+                  ...style,
+                  margin: 0,
+                  padding: "1rem",
+                  maxHeight: "300px",
+                  overflow: "auto",
+                }}
+              >
+                {tokens.map((line, i) => (
+                  <div key={i} {...getLineProps({ line, key: i })}>
+                    {line.map((token, key) => (
+                      <span key={key} {...getTokenProps({ token, key })} />
+                    ))}
+                  </div>
+                ))}
+              </pre>
+            )}
+          </Highlight>
+          <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={10}
+            className="w-full p-4 bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm focus:outline-none"
+            required
+          ></textarea>
+        </div>
+      </div>
+      <div>
+        <label
+          htmlFor="tags"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+        >
+          Tags
+        </label>
+        <div className="mt-1 flex items-center space-x-2">
+          <input
+            type="text"
+            id="tags"
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            className="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
+            placeholder="Add a tag"
+          />
+          <button
+            type="button"
+            onClick={addTag}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            Add
+          </button>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+            >
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(tag)}
+                className="ml-1 inline-flex items-center p-0.5 text-blue-400 hover:bg-blue-200 hover:text-blue-500 rounded-full"
+              >
+                <X size={14} />
+              </button>
+            </span>
+          ))}
+        </div>
       </div>
       <div className="flex justify-end space-x-2">
         <motion.button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
