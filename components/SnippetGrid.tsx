@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import SnippetCard from "./SnippetCard";
+import SnippetCard, { Snippet } from "./SnippetCard";
 import AddSnippetPlaceholder from "./AddSnippetPlaceholder";
+import Modal from "./Modal";
+import EditSnippetForm from "./EditSnippetForm";
 
 const initialSnippets = [
   {
@@ -30,15 +32,47 @@ const initialSnippets = [
 ];
 
 const SnippetGrid: React.FC = () => {
-  const [snippets, setSnippets] = useState(initialSnippets);
+  const [snippets, setSnippets] = useState<Snippet[]>(initialSnippets);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleAddSnippet = (newSnippet: Snippet) => {
+    setSnippets([...snippets, newSnippet]);
+    setIsAddModalOpen(false);
+  };
+
+  const handleUpdateSnippet = (updatedSnippet: Snippet) => {
+    setSnippets(
+      snippets.map((snippet) =>
+        snippet.id === updatedSnippet.id ? updatedSnippet : snippet
+      )
+    );
+  };
+
+  const handleDeleteSnippet = (id: number) => {
+    setSnippets(snippets.filter((snippet) => snippet.id !== id));
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <AddSnippetPlaceholder />
-      {snippets.map((snippet) => (
-        <SnippetCard key={snippet.id} snippet={snippet} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AddSnippetPlaceholder onClick={() => setIsAddModalOpen(true)} />
+        {snippets.map((snippet) => (
+          <SnippetCard
+            key={snippet.id}
+            snippet={snippet}
+            onUpdate={handleUpdateSnippet}
+            onDelete={handleDeleteSnippet}
+          />
+        ))}
+      </div>
+
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+        <EditSnippetForm
+          onSave={handleAddSnippet}
+          onCancel={() => setIsAddModalOpen(false)}
+        />
+      </Modal>
+    </>
   );
 };
 
