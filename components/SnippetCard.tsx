@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import Modal from "./Modal";
 import EditSnippetForm from "./EditSnippetForm";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Copy, Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 export interface Snippet {
   id: number;
@@ -33,6 +34,7 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const bgColor = languageColors[snippet.language] || "bg-gray-200";
 
   const handleEdit = () => {
@@ -50,11 +52,19 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
     setIsModalOpen(false);
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(snippet.content);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
     <>
-      <div
-        className={`rounded-lg shadow-md p-6 ${bgColor} cursor-pointer`}
+      <motion.div
+        className={`rounded-lg shadow-md p-6 ${bgColor} cursor-pointer relative`}
         onClick={() => setIsModalOpen(true)}
+        whileHover={{ scale: 1.05 }}
+        transition={{ type: "spring", stiffness: 300 }}
       >
         <h2 className="text-xl font-semibold mb-2">{snippet.title}</h2>
         <div className="mb-4 h-32 overflow-hidden">
@@ -85,8 +95,21 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">{snippet.date}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopy();
+            }}
+            className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+          >
+            {isCopied ? (
+              <Check size={16} className="text-green-500" />
+            ) : (
+              <Copy size={16} />
+            )}
+          </button>
         </div>
-      </div>
+      </motion.div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {isEditing ? (
@@ -96,9 +119,13 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
             onCancel={() => setIsEditing(false)}
           />
         ) : (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             <h2 className="text-2xl font-semibold mb-4">{snippet.title}</h2>
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <Highlight
                 theme={themes.dracula}
                 code={snippet.content}
@@ -130,6 +157,16 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
                   </pre>
                 )}
               </Highlight>
+              <button
+                onClick={handleCopy}
+                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+              >
+                {isCopied ? (
+                  <Check size={16} className="text-green-500" />
+                ) : (
+                  <Copy size={16} />
+                )}
+              </button>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">{snippet.date}</span>
@@ -148,7 +185,7 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </Modal>
     </>

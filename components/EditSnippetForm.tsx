@@ -1,32 +1,48 @@
-import React, { useState } from 'react'
-import { Snippet } from './SnippetCard'
+import React, { useState } from "react";
+import { Snippet } from "./SnippetCard";
+import { motion } from "framer-motion";
 
 interface EditSnippetFormProps {
-  snippet?: Snippet
-  onSave: (snippet: Snippet) => void
-  onCancel: () => void
+  snippet?: Snippet;
+  onSave: (snippet: Snippet) => void;
+  onCancel: () => void;
 }
 
-const EditSnippetForm: React.FC<EditSnippetFormProps> = ({ snippet, onSave, onCancel }) => {
-  const [title, setTitle] = useState(snippet?.title || '')
-  const [language, setLanguage] = useState(snippet?.language || '')
-  const [content, setContent] = useState(snippet?.content || '')
+const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
+  snippet,
+  onSave,
+  onCancel,
+}) => {
+  const [title, setTitle] = useState(snippet?.title || "");
+  const [language, setLanguage] = useState(snippet?.language || "");
+  const [content, setContent] = useState(snippet?.content || "");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     onSave({
       id: snippet?.id || Date.now(),
       title,
       language,
       content,
-      date: snippet?.date || new Date().toISOString().split('T')[0]
-    })
-  }
+      date: snippet?.date || new Date().toISOString().split("T")[0],
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <motion.form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Title
+        </label>
         <input
           type="text"
           id="title"
@@ -37,7 +53,12 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({ snippet, onSave, onCa
         />
       </div>
       <div>
-        <label htmlFor="language" className="block text-sm font-medium text-gray-700">Language</label>
+        <label
+          htmlFor="language"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Language
+        </label>
         <select
           id="language"
           value={language}
@@ -54,7 +75,12 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({ snippet, onSave, onCa
         </select>
       </div>
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content</label>
+        <label
+          htmlFor="content"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Content
+        </label>
         <textarea
           id="content"
           value={content}
@@ -65,22 +91,26 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({ snippet, onSave, onCa
         ></textarea>
       </div>
       <div className="flex justify-end space-x-2">
-        <button
+        <motion.button
           type="button"
           onClick={onCancel}
           className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Cancel
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="submit"
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Save
-        </button>
+        </motion.button>
       </div>
-    </form>
-  )
-}
+    </motion.form>
+  );
+};
 
-export default EditSnippetForm
+export default EditSnippetForm;
