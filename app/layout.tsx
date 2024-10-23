@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "../components/Sidebar";
+import ClientSidebar from "../components/ClientSidebar";
 import ClientAuthProvider from "../components/ClientAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,7 +15,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientAuthProvider>
           <div className="flex h-screen bg-gray-100">
-            <Sidebar />
+            <ClientSidebar />
             <main className="flex-1 p-6 overflow-auto">{children}</main>
           </div>
         </ClientAuthProvider>

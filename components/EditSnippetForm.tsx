@@ -54,7 +54,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+          className="block text-sm font-medium text-gray-700"
         >
           Title
         </label>
@@ -63,14 +63,14 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
+          className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm"
           required
         />
       </div>
       <div>
         <label
           htmlFor="language"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+          className="block text-sm font-medium text-gray-700"
         >
           Language
         </label>
@@ -78,7 +78,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
           id="language"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm text-gray-900 dark:text-gray-100"
+          className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm"
           required
         >
           <option value="">Select a language</option>
@@ -92,51 +92,51 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
       <div>
         <label
           htmlFor="content"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+          className="block text-sm font-medium text-gray-700"
         >
           Content
         </label>
-        <div className="mt-1 rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
-          <Highlight
-            theme={themes.nightOwl}
-            code={content}
-            language={language as any}
-          >
-            {({ className, style, tokens, getLineProps, getTokenProps }) => (
-              <pre
-                className={className}
-                style={{
-                  ...style,
-                  margin: 0,
-                  padding: "1rem",
-                  maxHeight: "300px",
-                  overflow: "auto",
-                }}
-              >
-                {tokens.map((line, i) => (
-                  <div key={i} {...getLineProps({ line, key: i })}>
-                    {line.map((token, key) => (
-                      <span key={key} {...getTokenProps({ token, key })} />
-                    ))}
-                  </div>
-                ))}
-              </pre>
-            )}
-          </Highlight>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={10}
-            className="w-full p-4 bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm focus:outline-none"
-            required
-          ></textarea>
-        </div>
+        <textarea
+          id="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={10}
+          className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-mono"
+          required
+        ></textarea>
+      </div>
+      <div className="mt-4 rounded-md border border-gray-300 overflow-hidden">
+        <Highlight
+          theme={themes.nightOwl}
+          code={content}
+          language={language as any}
+        >
+          {({ className, style, tokens, getLineProps, getTokenProps }) => (
+            <pre
+              className={className}
+              style={{
+                ...style,
+                margin: 0,
+                padding: "1rem",
+                maxHeight: "300px",
+                overflow: "auto",
+              }}
+            >
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line, key: i })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token, key })} />
+                  ))}
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
       </div>
       <div>
         <label
           htmlFor="tags"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+          className="block text-sm font-medium text-gray-700"
         >
           Tags
         </label>
@@ -146,7 +146,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
             id="tags"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
-            className="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm  text-gray-900 dark:text-gray-100"
+            className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm"
             placeholder="Add a tag"
           />
           <button
@@ -179,7 +179,7 @@ const EditSnippetForm: React.FC<EditSnippetFormProps> = ({
         <motion.button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

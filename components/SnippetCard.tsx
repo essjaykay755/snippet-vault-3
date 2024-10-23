@@ -113,7 +113,11 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
         </div>
       </motion.div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        bgColor={bgColor}
+      >
         {isEditing ? (
           <EditSnippetForm
             snippet={snippet}
