@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { X } from "lucide-react";
+import { Snippet } from "./SnippetCard";
 
 interface AddSnippetFormProps {
   onSave: (snippet: Omit<Snippet, "id" | "userId">) => void;

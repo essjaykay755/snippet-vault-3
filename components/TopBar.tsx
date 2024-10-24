@@ -1,8 +1,8 @@
-import React from 'react'
-import AddSnippetButton from './AddSnippetButton'
+import React from "react";
+import AddSnippetButton from "./AddSnippetButton";
 
 interface TopBarProps {
-  onAddSnippet: () => void
+  onAddSnippet: () => void;
 }
 
 const TopBar: React.FC<TopBarProps> = ({ onAddSnippet }) => {
@@ -11,7 +11,7 @@ const TopBar: React.FC<TopBarProps> = ({ onAddSnippet }) => {
       <h1 className="text-2xl font-bold">Snippets</h1>
       <AddSnippetButton onClick={onAddSnippet} />
     </div>
-  )
-}
+  );
+};
 
-export default TopBar
+export default TopBar;

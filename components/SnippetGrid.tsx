@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import SnippetCard from "./SnippetCard";
+import SnippetCard, { Snippet } from "./SnippetCard";
 import AddSnippetForm from "./AddSnippetForm";
 import TopBar from "./TopBar";
 import {
