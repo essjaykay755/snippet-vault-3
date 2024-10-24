@@ -91,17 +91,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                   >
                     {lang.value && (
                       <span
-                        className={`w-3 h-3 rounded-full mr-2 bg-${
+                        className={`w-3 h-3 rounded-full mr-2 ${
                           lang.value === "javascript"
-                            ? "yellow"
+                            ? "bg-yellow-400"
                             : lang.value === "python"
-                            ? "blue"
+                            ? "bg-blue-400"
                             : lang.value === "css"
-                            ? "pink"
+                            ? "bg-pink-400"
                             : lang.value === "html"
-                            ? "orange"
-                            : "blue"
-                        }-400`}
+                            ? "bg-orange-400"
+                            : "bg-blue-400"
+                        }`}
                       ></span>
                     )}
                     {lang.name}

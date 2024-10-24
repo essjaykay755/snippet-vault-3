@@ -37,7 +37,6 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
   onDelete,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const bgColor = languageColors[snippet.language] || "bg-gray-200";
@@ -62,27 +61,26 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
     router.push(`/snippet/${snippet.id}`);
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleSave = (updatedSnippet: Omit<Snippet, "id" | "userId">) => {
-    onUpdate({ ...snippet, ...updatedSnippet });
-    setIsEditing(false);
-    setIsModalOpen(false);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `Created on ${date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })}`;
   };
 
   return (
     <>
       <motion.div
-        className={`rounded-lg shadow-md overflow-hidden cursor-pointer relative`}
+        className={`rounded-lg shadow-md overflow-hidden cursor-pointer relative h-[300px]`}
         onClick={() => setIsModalOpen(true)}
         whileHover={{ scale: 1.05 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
-        <div className={`${bgColor} p-4`}>
+        <div className={`${bgColor} p-4 h-full flex flex-col`}>
           <h2 className="text-xl font-semibold mb-2">{snippet.title}</h2>
-          <div className="h-32 overflow-hidden">
+          <div className="flex-grow overflow-hidden">
             <Highlight
               theme={themes.dracula}
               code={snippet.content}
@@ -99,9 +97,9 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
                   }}
                 >
                   {tokens.slice(0, 5).map((line, i) => (
-                    <div {...getLineProps({ line, key: i })}>
+                    <div key={i} {...getLineProps({ line, key: i })}>
                       {line.map((token, key) => (
-                        <span {...getTokenProps({ token, key })} />
+                        <span key={key} {...getTokenProps({ token, key })} />
                       ))}
                     </div>
                   ))}
@@ -110,10 +108,10 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
               )}
             </Highlight>
           </div>
-        </div>
-        <div className="bg-white p-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{snippet.date}</span>
+          <div className="mt-2 flex justify-between items-center">
+            <span className="text-sm text-gray-600">
+              {formatDate(snippet.date)}
+            </span>
             <div className="flex space-x-2">
               <button
                 onClick={handleCopyLink}
@@ -145,13 +143,8 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
       {isModalOpen && (
         <SnippetModal
           snippet={snippet}
-          isEditing={isEditing}
-          onClose={() => {
-            setIsModalOpen(false);
-            setIsEditing(false);
-          }}
-          onEdit={handleEdit}
-          onSave={handleSave}
+          onClose={() => setIsModalOpen(false)}
+          onEdit={onUpdate}
           onDelete={() => {
             onDelete(snippet.id);
             setIsModalOpen(false);
