@@ -18,12 +18,19 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { Plus } from "lucide-react";
 
-const SnippetGrid: React.FC = () => {
+interface SnippetGridProps {
+  selectedLanguage: string | null;
+  selectedTag: string | null;
+}
+
+const SnippetGrid: React.FC<SnippetGridProps> = ({
+  selectedLanguage,
+  selectedTag,
+}) => {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
-  const [filteredSnippets, setFilteredSnippets] = useState<Snippet[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -33,25 +40,20 @@ const SnippetGrid: React.FC = () => {
         where("userId", "==", user.uid)
       );
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const snippetsData = querySnapshot.docs.map((doc) => {
-          const data = doc.data() as Omit<Snippet, "id">;
-          return { id: doc.id, ...data } as Snippet;
-        });
+        const snippetsData = querySnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Snippet)
+        );
         setSnippets(snippetsData);
       });
       return () => unsubscribe();
     }
   }, [user]);
 
-  useEffect(() => {
-    if (selectedLanguage) {
-      setFilteredSnippets(
-        snippets.filter((snippet) => snippet.language === selectedLanguage)
-      );
-    } else {
-      setFilteredSnippets(snippets);
-    }
-  }, [snippets, selectedLanguage]);
+  const filteredSnippets = snippets.filter(
+    (snippet) =>
+      (!selectedLanguage || snippet.language === selectedLanguage) &&
+      (!selectedTag || snippet.tags.includes(selectedTag))
+  );
 
   const handleAddSnippet = async (
     newSnippet: Omit<Snippet, "id" | "userId">
@@ -82,23 +84,18 @@ const SnippetGrid: React.FC = () => {
   if (!user) return <SignIn />;
 
   return (
-    <>
-      <div className="mb-4">
-        <select
-          value={selectedLanguage || ""}
-          onChange={(e) => setSelectedLanguage(e.target.value || null)}
-          className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm"
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Snippets</h1>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center"
         >
-          <option value="">All Languages</option>
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="css">CSS</option>
-          <option value="html">HTML</option>
-          <option value="typescript">TypeScript</option>
-        </select>
+          <Plus size={20} className="mr-2" />
+          Add Snippet
+        </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AddSnippetPlaceholder onClick={() => setIsAddModalOpen(true)} />
         {filteredSnippets.map((snippet) => (
           <SnippetCard
             key={snippet.id}
@@ -108,14 +105,13 @@ const SnippetGrid: React.FC = () => {
           />
         ))}
       </div>
-
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <EditSnippetForm
           onSave={handleAddSnippet}
           onCancel={() => setIsAddModalOpen(false)}
         />
       </Modal>
-    </>
+    </div>
   );
 };
 

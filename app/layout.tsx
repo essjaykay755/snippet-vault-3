@@ -1,9 +1,13 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
-import ClientSidebar from "../components/ClientSidebar";
-import ClientAuthProvider from "../components/ClientAuthProvider";
+import { Inter } from "next/font/google";
+import { AuthProvider } from "../contexts/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const metadata = {
+  title: "SnippetVault",
+  description: "Store and manage your code snippets",
+};
 
 export default function RootLayout({
   children,
@@ -13,12 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientAuthProvider>
-          <div className="flex h-screen bg-gray-100">
-            <ClientSidebar />
-            <main className="flex-1 p-6 overflow-auto">{children}</main>
+        <AuthProvider>
+          <div className="flex flex-col md:flex-row min-h-screen">
+            {children}
           </div>
-        </ClientAuthProvider>
+        </AuthProvider>
       </body>
     </html>
   );

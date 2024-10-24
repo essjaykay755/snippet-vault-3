@@ -1,5 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -24,20 +25,18 @@ const Modal: React.FC<ModalProps> = ({
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className={`${bgColor} w-full max-w-md rounded-lg shadow-lg`}
+            className={`${bgColor} w-full max-w-4xl rounded-lg shadow-lg relative`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
           >
-            <div className="p-6">
-              <button
-                onClick={onClose}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              >
-                &times;
-              </button>
-              {children}
-            </div>
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-2"
+            >
+              <X size={24} />
+            </button>
+            <div className="p-6 max-h-[80vh] overflow-y-auto">{children}</div>
           </motion.div>
         </motion.div>
       )}
